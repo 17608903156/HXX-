@@ -1,35 +1,44 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的个人作品集</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #2563eb;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>欢迎访问我的网站！</h1>
-        <p>这是我的个人作品集，正在建设中...</p >
-        <!-- 3D作品将在这里展示 -->
-    </div>
-</body>
-</html>
+<script type="module">
+  import * as THREE from 'https://cdn.skypack.dev/three@0.136.0';
 
+  // 1. 创建场景
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ alpha: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  // 2. 创建图片平面
+  const textureLoader = new THREE.TextureLoader();
+  const geometry = new THREE.PlaneGeometry(8, 4.5); // 16:9比例
+  const material = new THREE.MeshBasicMaterial({
+    map: textureLoader.load('你的图片.jpg'),
+    side: THREE.DoubleSide
+  });
+  const image = new THREE.Mesh(geometry, material);
+  scene.add(image);
+  
+  // 3. 添加文字
+  const fontLoader = new THREE.FontLoader();
+  fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', font => {
+    const textGeometry = new THREE.TextGeometry('HUANG XUXIAO', {
+      font: font,
+      size: 0.5,
+      height: 0.1
+    });
+    const textMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
+    const text = new THREE.Mesh(textGeometry, textMaterial);
+    text.position.z = -1;
+    text.position.y = -1.5;
+    scene.add(text);
+  });
+
+  // 4. 动画循环
+  camera.position.z = 5;
+  function animate() {
+    requestAnimationFrame(animate);
+    image.rotation.y += 0.002; // 缓慢旋转
+    renderer.render(scene, camera);
+  }
+  animate();
+</script>
